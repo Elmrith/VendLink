@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - VendLink</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/lucide.min.js"></script>
+</head>
+<body class="role-admin min-h-screen bg-slate-50 text-slate-900 font-sans antialiased">
+  <div data-site-header></div>
+
+  <main class="admin-console page-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <header class="admin-page-heading">
+      <div>
+        <span class="admin-kicker">VendLink / Operations</span>
+        <h1>Administration</h1>
+        <p>Accounts, access, and delivery activity.</p>
+      </div>
+      <div class="admin-page-actions">
+        <a href="#deliveries" class="admin-primary-button inline-flex items-center gap-2 text-decoration-none">
+          <i data-lucide="truck" class="h-4 w-4"></i>
+          View deliveries
+        </a>
+        <div class="admin-notification-wrap">
+          <button id="adminNotificationsButton" class="admin-icon-button admin-notification-button" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="adminNotificationPanel" title="Notifications">
+            <i data-lucide="bell" class="h-4 w-4"></i>
+            <span id="adminNotificationBadge" class="admin-notification-badge" hidden></span>
+          </button>
+          <section id="adminNotificationPanel" class="admin-notification-panel" aria-label="Admin notifications" hidden>
+            <header class="admin-notification-heading">
+              <h2>Notifications</h2>
+              <button id="markAdminNotificationsRead" type="button">Mark all read</button>
+            </header>
+            <ul id="adminNotificationList" class="admin-notification-list">
+              <li class="admin-notification-empty">Loading notifications...</li>
+            </ul>
+          </section>
+        </div>
+        <button id="adminRefreshButton" class="admin-icon-button" type="button" aria-label="Refresh administration data" title="Refresh">
+          <i data-lucide="refresh-cw" class="h-4 w-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <section class="admin-metrics" aria-label="Platform summary">
+      <article class="admin-metric">
+        <span class="admin-metric-icon admin-metric-icon--accounts"><i data-lucide="users" class="h-5 w-5"></i></span>
+        <div><span class="admin-metric-label">Registered accounts</span><strong id="adminUserCount">0</strong></div>
+      </article>
+      <article class="admin-metric">
+        <span class="admin-metric-icon admin-metric-icon--pending"><i data-lucide="user-round-clock" class="h-5 w-5"></i></span>
+        <div><span class="admin-metric-label">Pending Account</span><strong id="adminPendingCount">0</strong></div>
+      </article>
+      <article class="admin-metric">
+        <span class="admin-metric-icon admin-metric-icon--products"><i data-lucide="package-check" class="h-5 w-5"></i></span>
+        <div><span class="admin-metric-label">Active products</span><strong id="adminProductCount">0</strong></div>
+      </article>
+      <article class="admin-metric">
+        <span class="admin-metric-icon admin-metric-icon--volume"><i data-lucide="receipt" class="h-5 w-5"></i></span>
+        <div><span class="admin-metric-label">Order volume</span><strong id="adminOrderTotal">₱0.00</strong></div>
+      </article>
+    </section>
+
+    <section class="admin-accounts admin-overall-demand" aria-labelledby="adminOverallDemandHeading">
+      <header class="admin-accounts-heading">
+        <div>
+          <span class="admin-kicker">All-time marketplace activity</span>
+          <h2 id="adminOverallDemandHeading">Overall product demand</h2>
+          <p>Platform-wide quantities ordered across vendors and suppliers.</p>
+        </div>
+        <i data-lucide="pie-chart" class="h-5 w-5" aria-hidden="true"></i>
+      </header>
+      <div class="admin-overall-demand-chart">
+        <canvas id="adminOverallDemandChart" aria-label="Pie chart of overall product demand" role="img" hidden></canvas>
+        <p id="adminOverallDemandMessage" class="admin-overall-demand-message" role="status" aria-live="polite">Loading overall product demand...</p>
+      </div>
+    </section>
+
+    <section id="deliveries" class="admin-accounts admin-deliveries" aria-labelledby="deliveriesHeading">
+      <header class="admin-accounts-heading">
+        <div>
+          <span class="admin-kicker">Order fulfillment</span>
+          <div class="admin-deliveries-title">
+            <h2 id="deliveriesHeading">Deliveries</h2>
+            <a href="#deliveries" class="admin-deliveries-anchor" aria-label="Go to Deliveries" title="Go to Deliveries">
+              <i data-lucide="arrow-down" class="h-4 w-4" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+        <div class="admin-account-tools">
+          <label class="admin-search" for="adminDeliverySearch">
+            <i data-lucide="search" class="h-4 w-4"></i>
+            <input id="adminDeliverySearch" type="search" placeholder="Search receipt, vendor, supplier, or address" autocomplete="off">
+          </label>
+          <select id="adminDeliverySort" class="admin-delivery-status" aria-label="Sort deliveries by order date">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+          <select id="adminDeliveryStatus" class="admin-delivery-status" aria-label="Filter deliveries by status">
+            <option value="all">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="processing">Processing</option>
+            <option value="ready_for_dispatch">Ready for dispatch</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="arrival_confirmed">Arrival confirmed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </header>
+      <div class="admin-table-meta">
+        <span id="adminDeliveryCount" aria-live="polite">Loading deliveries...</span>
+        <span id="adminDeliverySortLabel">Newest first</span>
+      </div>
+      <div class="admin-table-scroll">
+        <table class="admin-deliveries-table">
+          <thead>
+            <tr>
+              <th scope="col">Receipt</th>
+              <th scope="col">Vendor</th>
+              <th scope="col">Supplier</th>
+              <th scope="col">Delivery address</th>
+              <th scope="col">Status</th>
+              <th scope="col">Order date &amp; time</th>
+            </tr>
+          </thead>
+          <tbody id="adminDeliveriesBody">
+            <tr><td colspan="6" class="admin-table-empty">Loading deliveries...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="adminDeliveryState" class="admin-action-state" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="admin-create-supplier" aria-labelledby="createSupplierHeading">
+      <div class="admin-create-supplier-copy">
+        <span class="admin-kicker">Direct account setup</span>
+        <h2 id="createSupplierHeading">Create supplier account</h2>
+        <p>Create an approved supplier account and send its owner a secure password setup link.</p>
+      </div>
+      <form id="createSupplierForm" class="admin-create-supplier-form">
+        <label for="newSupplierName">Supplier name<input id="newSupplierName" name="name" type="text" maxlength="100" autocomplete="name" required></label>
+        <label for="newSupplierEmail">Supplier email<input id="newSupplierEmail" name="email" type="email" maxlength="191" autocomplete="email" required></label>
+        <button id="createSupplierButton" class="admin-primary-button" type="submit"><i data-lucide="send" class="h-4 w-4"></i> Create &amp; email</button>
+      </form>
+      <p id="createSupplierState" class="admin-create-supplier-state" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="admin-security-settings" aria-labelledby="securitySettingsHeading">
+      <div class="admin-create-supplier-copy">
+        <span class="admin-kicker">Security configuration</span>
+        <h2 id="securitySettingsHeading">Email verification controls</h2>
+        <p>Control email and new-device verification codes for vendor and supplier accounts, and keep the admin email up to date.</p>
+      </div>
+      <form id="securitySettingsForm" class="admin-create-supplier-form">
+        <label class="admin-toggle-row" for="requireEmailVerificationToggle">
+          <input id="requireEmailVerificationToggle" type="checkbox">
+          <span>Require verification codes for non-admin sign-ins</span>
+        </label>
+        <label for="adminEmailAddress">Admin email address<input id="adminEmailAddress" name="adminEmail" type="email" maxlength="191" autocomplete="email" placeholder="admin@vendlink.com"></label>
+        <button id="saveSecuritySettingsButton" class="admin-primary-button" type="submit"><i data-lucide="shield-check" class="h-4 w-4"></i> Save security settings</button>
+      </form>
+      <p id="securitySettingsState" class="admin-create-supplier-state" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="admin-accounts" aria-labelledby="privacyRequestsHeading">
+      <header class="admin-accounts-heading">
+        <div>
+          <span class="admin-kicker">Compliance</span>
+          <h2 id="privacyRequestsHeading">Privacy requests</h2>
+        </div>
+      </header>
+      <div class="admin-table-meta">
+        <span id="adminPrivacyRequestCount">Loading requests...</span>
+      </div>
+      <div class="admin-table-scroll">
+        <table class="admin-users-table">
+          <thead>
+            <tr>
+              <th scope="col">Request</th>
+              <th scope="col">Account</th>
+              <th scope="col">Reason</th>
+              <th scope="col">Status</th>
+              <th scope="col">Requested</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminPrivacyRequestsBody">
+            <tr><td colspan="6" class="admin-table-empty">Loading privacy requests...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="adminPrivacyRequestState" class="admin-action-state" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="admin-accounts" aria-labelledby="accountsHeading">
+      <header class="admin-accounts-heading">
+        <div>
+          <span class="admin-kicker">Directory</span>
+          <h2 id="accountsHeading">Vendor &amp; supplier accounts</h2>
+        </div>
+        <div class="admin-account-tools">
+          <label class="admin-search" for="adminAccountSearch">
+            <i data-lucide="search" class="h-4 w-4"></i>
+            <input id="adminAccountSearch" type="search" placeholder="Search accounts" autocomplete="off">
+          </label>
+        </div>
+      </header>
+
+      <div class="admin-account-filters" role="group" aria-label="Filter accounts by status">
+        <button type="button" data-admin-filter="all" aria-pressed="true">All <span data-filter-count="all">0</span></button>
+        <button type="button" data-admin-filter="pending" aria-pressed="false">Pending Account <span data-filter-count="pending">0</span></button>
+        <button type="button" data-admin-filter="approved" aria-pressed="false">Approved <span data-filter-count="approved">0</span></button>
+        <button type="button" data-admin-filter="disapproved" aria-pressed="false">Disapproved <span data-filter-count="disapproved">0</span></button>
+      </div>
+
+      <div class="admin-table-meta">
+        <span id="adminAccountCount" aria-live="polite">0 accounts</span>
+        <span>Updated on refresh</span>
+      </div>
+      <div class="admin-table-scroll">
+        <table class="admin-users-table">
+          <thead>
+            <tr>
+              <th scope="col">Account</th>
+              <th scope="col">Email</th>
+              <th scope="col">Application reason</th>
+              <th scope="col">Business permit</th>
+              <th scope="col">Role</th>
+              <th scope="col">Registered</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersBody">
+            <tr><td colspan="7" class="admin-table-empty">Loading accounts...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="adminActionState" class="admin-action-state" role="status" aria-live="polite"></p>
+    </section>
+
+    <dialog id="accountActionDialog" class="admin-action-dialog" aria-labelledby="accountActionTitle">
+      <form id="accountActionForm" class="admin-action-dialog-form">
+        <header class="admin-action-dialog-heading">
+          <div>
+            <span class="admin-kicker">Account review</span>
+            <h2 id="accountActionTitle">Change account status</h2>
+          </div>
+          <button id="closeAccountActionDialog" class="admin-icon-button" type="button" aria-label="Close dialog">
+            <i data-lucide="x" class="h-4 w-4"></i>
+          </button>
+        </header>
+        <p id="accountActionTarget" class="admin-action-target"></p>
+        <label for="accountActionChoice">Choose an action</label>
+        <select id="accountActionChoice" class="admin-action-dialog-select" required>
+          <option value="">Select action</option>
+          <option value="approve">Approved</option>
+          <option value="disapprove">Disapproved</option>
+          <option id="resendSupplierSetupOption" value="resendSetup" hidden>Resend password setup email</option>
+          <option value="delete">Delete account</option>
+        </select>
+        <p id="accountActionDialogError" class="admin-action-dialog-error" role="alert"></p>
+        <footer class="admin-action-dialog-footer">
+          <button id="cancelAccountActionDialog" class="admin-dialog-cancel" type="button">Cancel</button>
+          <button id="submitAccountAction" class="admin-primary-button" type="submit" disabled>Apply action</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="accountEditDialog" class="admin-action-dialog" aria-labelledby="accountEditTitle">
+      <form id="accountEditForm" class="admin-action-dialog-form">
+        <header class="admin-action-dialog-heading">
+          <div><span class="admin-kicker">Administrator account edit</span><h2 id="accountEditTitle">Edit account identity</h2></div>
+          <button id="closeAccountEditDialog" class="admin-icon-button" type="button" aria-label="Close dialog"><i data-lucide="x" class="h-4 w-4"></i></button>
+        </header>
+        <label for="editAccountName">Full name</label>
+        <input id="editAccountName" class="admin-action-dialog-select" maxlength="100" required>
+        <label for="editAccountUsername">Username</label>
+        <input id="editAccountUsername" class="admin-action-dialog-select" maxlength="50">
+        <label for="editAccountBusinessName">Business / account name</label>
+        <input id="editAccountBusinessName" class="admin-action-dialog-select" maxlength="100">
+        <p id="accountEditError" class="admin-action-dialog-error" role="alert"></p>
+        <footer class="admin-action-dialog-footer">
+          <button id="cancelAccountEditDialog" class="admin-dialog-cancel" type="button">Cancel</button>
+          <button id="submitAccountEdit" class="admin-primary-button" type="submit">Save identity</button>
+        </footer>
+      </form>
+    </dialog>
+  </main>
+
+  <div data-site-footer></div>
+
+  <script src="assets/js/layout.js?v=7"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/chart.umd.min.js"></script>
+  <script src="assets/js/admin.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="">
+  <title>Request a VendLink account</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/lucide.min.js"></script>
+</head>
+<body class="registration-page">
+  <header class="registration-nav">
+    <a href="index.html" class="landing-brand" aria-label="VendLink home"><span class="landing-brand-mark"><i data-lucide="boxes" class="w-5 h-5"></i></span><span>Vend<span>Link</span></span></a>
+    <a class="registration-home-link" href="index.html"><i data-lucide="house" class="h-4 w-4"></i> Home</a>
+  </header>
+
+  <main class="registration-main">
+    <section class="registration-intro">
+      <span class="landing-eyebrow"><span></span> Account application</span>
+      <h1>Get started with VendLink.</h1>
+      <p>Tell us who you are and request access for your business.</p>
+      <ul class="registration-points" aria-label="What happens next">
+        <li><strong>Tell us about your business</strong><span>Share your details and a clear photo of your business permit.</span></li>
+        <li><strong>Our team reviews it</strong><span>An admin checks every application to keep the marketplace trusted.</span></li>
+        <li><strong>Start sourcing</strong><span>Once approved, you can sign in and start ordering or supplying.</span></li>
+      </ul>
+    </section>
+
+    <section class="registration-panel" aria-labelledby="registrationHeading">
+      <div class="registration-panel-heading">
+        <div>
+          <span class="registration-step">01 / ACCOUNT TYPE</span>
+          <h2 id="registrationHeading">Choose your account</h2>
+        </div>
+        <span class="registration-lock"><i data-lucide="shield-check" class="h-4 w-4"></i> Admin reviewed</span>
+      </div>
+
+      <div class="registration-role-switch" role="group" aria-label="Account type">
+        <button type="button" data-registration-role="vendor" aria-pressed="true"><i data-lucide="store" class="h-4 w-4"></i> Vendor</button>
+        <button type="button" data-registration-role="supplier" aria-pressed="false"><i data-lucide="truck" class="h-4 w-4"></i> Supplier</button>
+      </div>
+
+      <div id="registrationNotice" class="registration-notice" role="status" aria-live="polite" hidden></div>
+      <form id="registrationForm" class="registration-form">
+        <input id="registrationRole" name="role" type="hidden" value="vendor">
+        <label for="registrationName">Full name<input id="registrationName" name="name" type="text" autocomplete="name" maxlength="100" required placeholder="Your full name"></label>
+        <label for="registrationEmail">Email address<input id="registrationEmail" name="email" type="email" autocomplete="email" maxlength="191" required placeholder="you@business.com"></label>
+        <div class="registration-role-fields">
+          <label for="registrationProfileImage">Profile picture (optional)
+            <input id="registrationProfileImage" name="profileImageFile" type="file" accept="image/jpeg,image/png,image/webp">
+          </label>
+          <img id="registrationProfilePreview" class="registration-image-preview" alt="Selected profile picture preview" hidden>
+        </div>
+        <div class="registration-role-fields">
+          <label>Municipality<input value="Guimbal" readonly aria-label="Municipality, Guimbal"></label>
+          <label>Province<input value="Iloilo" readonly aria-label="Province, Iloilo"></label>
+          <label for="registrationBarangay">Barangay<input id="registrationBarangay" name="barangay" maxlength="100" required placeholder="Enter your barangay"></label>
+          <label for="registrationSitio">Sitio / Purok<input id="registrationSitio" name="sitioPurok" maxlength="150" placeholder="Enter your sitio or purok"></label>
+          <label for="registrationAdditionalAddress">House number, street, or additional address (optional)<input id="registrationAdditionalAddress" name="additionalAddress" maxlength="255" placeholder="House number, street, or landmark"></label>
+        </div>
+
+        <div class="registration-role-fields">
+          <label for="registrationBusinessPermit">Business permit picture (required for vendors and suppliers)
+            <input id="registrationBusinessPermit" name="businessPermitFile" type="file" accept="image/jpeg,image/png,image/webp" required>
+          </label>
+          <img id="registrationBusinessPermitPreview" class="registration-permit-preview" alt="Selected business permit preview" hidden>
+          <p class="registration-helper">Upload a clear JPG, PNG, or WEBP image (5MB max). The file will be checked and an admin must review its authenticity.</p>
+        </div>
+
+        <div class="registration-role-fields" data-role-fields="vendor">
+          <label for="registrationPassword">Create password<input id="registrationPassword" name="password" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters"></label>
+          <p class="registration-helper">Your account will be ready to use after admin approval.</p>
+        </div>
+
+        <div class="registration-role-fields" data-role-fields="supplier" hidden>
+          <label for="registrationMessage">Why do you need a supplier account?<textarea id="registrationMessage" name="applicationMessage" rows="5" maxlength="1000" placeholder="Describe your business and what you plan to supply."></textarea></label>
+          <p class="registration-helper">If approved, we will email you a secure link to set your password.</p>
+        </div>
+
+        <div class="registration-consent-box">
+          <label class="consent-row">
+            <input id="registrationDataConsent" name="dataProcessingConsent" type="checkbox" required>
+            <span>I consent to VendLink processing my contact and business information, including my business permit image, for account review, order support, security, and legal compliance as described in the <a href="privacy-policy.html">Privacy Policy</a>.</span>
+          </label>
+          <label class="consent-row">
+            <input id="registrationMarketingConsent" name="marketingConsent" type="checkbox">
+            <span>I agree to receive optional marketing and product updates from VendLink. This is separate from required transactional emails.</span>
+          </label>
+        </div>
+
+        <button id="registrationSubmit" class="registration-submit" type="submit">Submit vendor application <i data-lucide="arrow-right" class="h-4 w-4"></i></button>
+      </form>
+      <p class="registration-footnote">Applications are reviewed by the VendLink admin team. <a href="terms.html">Terms of Service</a> and <a href="cookies.html">Cookie Policy</a> apply.</p>
+    </section>
+  </main>
+
+  <footer class="registration-footer">
+    <a href="index.html" class="landing-brand" aria-label="VendLink home"><span class="landing-brand-mark"><i data-lucide="boxes" class="w-4 h-4"></i></span><span>Vend<span>Link</span></span></a>
+    <nav aria-label="Legal"><a href="privacy-policy.html">Privacy</a><a href="terms.html">Terms</a><a href="cookies.html">Cookies</a></nav>
+  </footer>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/password-visibility.js"></script>
+  <script src="assets/js/register.js"></script>
+</body>
+</html>
